@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — AuthApp</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">AuthApp</span>
+    </div>
+
+    <h1>Create account</h1>
+    <p class="subtitle">Join us — it only takes a moment.</p>
+
+    <div class="form-group">
+      <label for="username">Full name</label>
+      <input type="text" id="username" placeholder="Your name" />
+    </div>
+    <div class="form-group">
+      <label for="email">Email address</label>
+      <input type="email" id="email" placeholder="you@example.com" />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Min. 6 characters" />
+    </div>
+    <div class="form-group">
+      <label for="confirm">Confirm password</label>
+      <input type="password" id="confirm" placeholder="Repeat your password" />
+    </div>
+    <button onclick="register()" id="btn">Create account</button>
+
+    <div id="alert" class="alert"></div>
+
+    <div class="link-row">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+
+  <script>
+    function register() {
+      const username = document.getElementById('username').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm  = document.getElementById('confirm').value;
+
+      if (!username || !email || !password || !confirm) {
+        showAlert('error', 'Please fill in all fields.'); return;
+      }
+      if (password.length < 6) {
+        showAlert('error', 'Password must be at least 6 characters.'); return;
+      }
+      if (password !== confirm) {
+        showAlert('error', 'Passwords do not match.'); return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find(u => u.email === email)) {
+        showAlert('error', 'Email already registered.'); return;
+      }
+
+      users.push({ username, email, password: btoa(password) });
+      localStorage.setItem('users', JSON.stringify(users));
+
+      showAlert('success', 'Account created! Redirecting to login…');
+      setTimeout(() => window.location.href = 'login.html', 1500);
+    }
+
+    function showAlert(type, msg) {
+      const el = document.getElementById('alert');
+      el.className = 'alert ' + type;
+      el.textContent = msg;
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') register(); });
+  </script>
+</body>
+</html>
